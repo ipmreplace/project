@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./js/jquery.min.js"> </script>
+</head>
+<body>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2 align="center">签名展示</h2>
+                <div class="return-sign"><a href="sign.html">返回签名</a>
+                </div>
+                </div>
+                <div class="items"></div>
+                <div class="footer">
+                <nav aria-label="Page navigation example">
+                <ul class="pagination" id="pagination"></ul>
+                </nav>
+                </div>
+                </div>
+                <script>
+  $(function() {
+    // 更新数据和分⻚控件
+    function updateData(page) {
+    $.ajax({
+    url: "http://sign.njpi/api/sign.php", // 替换为你的后台数据接口
+    method: "GET",
+    data: { page: page, action: "page" },
+    success: function (response) {
+    // 处理从后台获取的数据
+    console.log(response);
+    var result = $.parseJSON(response);
+    pageSize = result.pageSize;
+    records = result.records;
+    var currentData = result.data; // 假设后台返回的数据在 response.data 中
+    // 更新显示数据
+    displayData(currentData);
+    // 更新分⻚控件
+    updatePagination(page, pageSize, records);
+     },
+    error: function (error) {
+    console.error("Error fetching data:", error);
+     },
+     });
+     }
+    // 显示数据
+    function displayData(data) {
+    var dataContainer = $(".items");
+    dataContainer.empty();
+// 在dataContainer中添加data的HTML表示
+data.forEach(function (item) {
+// 你的显示逻辑
+var num =
+1 + Math.round(Math.random() * 10) >= 10
+? 10
+ : 1 + Math.round(Math.random() * 10);
+var divEl = $("<div class='item'>");
+divEl.css(
+"background-image",
+"url('./images/" + `${num}` + ".jpg')"
+ );
+var imgEl = $("<img src='" + item.path + "'>");
+divEl.append(imgEl);
+dataContainer.append(divEl);
+ });
+ }
+// 更新分⻚控件
+function updatePagination(currentPage, pageSize, records) {
+totalPages = Math.ceil(records / pageSize);
+var paginationContainer = $("#pagination");
+paginationContainer.empty();
+$("#pagination").append(
+'<li class="page-item"><a class="page-link" href="#" aria-label="Previous" id="page-prev"><span aria-hidden="true">&laquo;</span></a></li>');
+$("#pagination").append(
+    '<li class="page-item"><a class="page-link" href="#" aria-label="Previous" id="page-next"><span aria-hidden="true">&raquo;</span></a></li>');
+for (let i = 1; i <= totalPages; i++) {
+let li = $('<li class="page-item">');
+if (i == currentPage) {
+li.addClass("active");
+ }
+let a = $('<a class="page-link page-num">');
+a.text(i);
+li.append(a);
+$("#pagination li:last").before(li);
+ }
+// 点击⻚码按钮时切换⻚码
+$(".page-num").on("click", function () {
+currentPage = parseInt($(this).text());
+updateData(currentPage);
+ });
+// 点击上⼀⻚按钮时切换⻚码
+$("#page-prev").on("click", function () {
+if (currentPage > 1) {
+currentPage--;
+updateData(currentPage);
+ }
+ });
+// 点击下⼀⻚按钮时切换⻚码
+$("#page-next").on("click", function () {
+if (currentPage < totalPages) {
+currentPage++;
+updateData(currentPage);
+ }
+ });
+ }
+// 初始化⻚⾯
+updateData(1);
+ });
+</script>
+</body>
+
+</html>

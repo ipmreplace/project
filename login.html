@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  <canvas id="signatureCanvas" width="800" height="400"></canvas><br />
+  <script src="./jquery-1.12.4.js"></script>
+</head>
+<body>
+    
+</body>
+<script>
+// 获取Canvas元素
+var canvas = document.getElementById("signatureCanvas");
+var context = canvas.getContext("2d");
+// 设置绘制样式
+context.fillStyle = "rgba(0, 0, 0, 0)";
+context.lineWidth = 2;
+context.strokeStyle = "#000";
+// 定义绘制状态
+var isDrawing = false;
+// 处理⿏标按下事件
+canvas.addEventListener("mousedown", function (event) {
+isDrawing = true;
+context.beginPath();
+context.moveTo(
+event.clientX - canvas.getBoundingClientRect().left,
+event.clientY - canvas.getBoundingClientRect().top
+);
+});
+// 处理⿏标移动事件
+canvas.addEventListener("mousemove", function (event) {
+if (isDrawing) {
+context.lineTo(
+event.clientX - canvas.getBoundingClientRect().left,
+event.clientY - canvas.getBoundingClientRect().top
+ );
+context.stroke();
+ }
+});
+// 处理⿏标松开事件
+canvas.addEventListener("mouseup", function () {
+isDrawing = false;
+});
+// 处理⿏标离开Canvas事件
+canvas.addEventListener("mouseleave", function () {
+isDrawing = false;
+});
+// 保存签名
+function saveSignature() {
+var canvas = document.getElementById("signatureCanvas");
+var savedSignature = document.getElementById("savedSignature");
+// 将Canvas内容转为图像数据
+var dataURL = canvas.toDataURL("image/png");
+console.log(dataURL);
+// 显示保存的签名图像
+savedSignature.src = dataURL;
+$.ajax({
+url: "http://sign.njpi/api/sign.php",
+method: "post",
+data: {
+userid: 3,
+action: "save",
+signData: dataURL,
+ },
+success: (res) => {
+// const result = JSON.parse(res);
+console.log(res);
+ },
+error: (err) => {
+console.log(err);
+ },
+ });
+}
+function changeBackground() {
+const imgArr = [
+"./images/1.jpg",
+"./images/2.jpg",
+"./images/3.jpg",
+"./images/4.jpg",
+"./images/5.jpg",
+"./images/6.jpg",
+"./images/7.jpg",
+"./images/8.jpg",
+"./images/9.jpg",
+"./images/10.jpg",
+ ];
+let num = Math.round(Math.random() * 10);
+if (num > 9) num = 9;
+let num2 = Math.round(Math.random() * 10);
+if (num2 > 9) num2 = 9;
+var canvas = document.getElementById("signatureCanvas");
+//使⽤模板字符串替换⽅式更换背景
+canvas.style.backgroundImage = `url('${imgArr[num]}')`;
+const savedSignature = document.getElementById("savedSignature");
+savedSignature.style.backgroundImage = `url('${imgArr[num2]}')`;
+}
+$.ajax({
+url: "http://sign.njpi/api/user.php",
+method: "get",
+data: { action: "checkLogin" },
+success: (res) => {
+var result = JSON.parse(JSON.stringify(res));
+console.log(result);
+if (result.code == 0) {
+alert("⽤户未登录", result);
+location.href = "login.html";
+ }
+ },
+});
+
+</script>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initialscale=1.0" />
+<title>Document</title>
+<script src="./jquery-1.12.4.js"></script>
+<style>
+.container {
+position: relative;
+ }
+.header {
+width: 800px;
+height: 40px;
+position: relative;
+margin: 0 auto;
+ }
+.items {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+width: 1200px;
+height: 100%;
+/* border: 1px solid blue; */
+margin: 0 auto;
+margin-top: 40px;
+ }
+.item {
+width: 800px;
+height: 400px;
+border: 3px solid rgb(77, 255, 0);
+border-radius: 5px;
+margin: 5px;
+ }
+.return-sign {
+position: absolute;
+right: 100px;
+ }
+.return-sign a {
+text-decoration: none;
+ }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h2 align="center">签名展示</h2>
+<div class="return-sign"><a href="sign1.html">返回签名</a></div>
+</div>
+<div class="items"></div>
+<div class="footer"></div>
+</div>
+<script>
+$.ajax({
+url: "http://sign.njpi/api/sign.php",
+method: "get",
+data: {
+action: "query",
+ },
+success: (res) => {
+var data = JSON.parse(res).data;
+// console.log(data);
+for (item of data) {
+var divEl = $("<div class='item'>");
+var num =
+1 + Math.round(Math.random() * 10) > 10
+? 10
+ : 1 + Math.round(Math.random() * 10);
+var imgEl = $("<img>");
+imgEl.attr("src", `${item.path}`);
+imgEl.attr("alt", "no image !");
+divEl.css(
+"background-image",
+"url('" + "./images/" + num + ".jpg')"
+ );
+ divEl.append(imgEl);
+$(".items").append(divEl);
+ }
+ },
+ });
+</script>
+</body>
+</html>
